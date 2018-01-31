@@ -1,0 +1,336 @@
+modules:
+  - docassemble.base.util
+---
+include:
+  - prot-order-interview.yml
+---
+mandatory: True
+question: |
+  All done
+attachment code: protection_order
+---
+attachment:
+  name: Formulario de orden de proteccion
+  filename: Formulario-de-orden-de-proteccion
+  pdf template file: Formulario-de-orden-de-proteccion.pdf
+  variable name: protection_order
+  fields:
+    - "Superior[0]": |
+        ${ yesno(is_appeal) }
+    - "Court_of_First_Instance[0]": |
+        ${ yesno(is_appeal, invert=True) }
+    - "Municipal_de_of[0]": |
+        ${ municipality }
+    - "Caso_Número_Case_Number[0]": |
+        ${ case_number }
+    - "Parte_Peticionaria_Petitioner[0]": |
+        ${ petitioner }
+    - "Parte_Peticionada_Respondent[0]": |
+        ${ respondent }
+    - "Compareció_la_parte_peticionaria_por_derecho_propio_The_petitioner_appeared_PRO_SE[0]": |
+        ${ yesno(petitioner.will_appear and petitioner.pro_se) }
+    - "Compareció_la_parte_peticionaria_con_su_representante_legal_The_petitioner_appeared_with_hisher_legal[0]": |
+        ${ yesno(petitioner.will_appear and petitioner.has_counsel and petitioner.counsel.will_appear) }
+    - "Compareció_el_la_representante_de_la_parte_peticionaria_The_petitioners_representative_appeared[0]": |
+        ${ yesno(petitioner.has_representative and petitioner.representative.will_appear) }
+    - "Compareció_el_la_representante_legal_de_la_parte_peticionaria_The_petitioners_legal_counsel_appeared[0]": |
+        ${ yesno(petitioner.has_counsel and petitioner.counsel.will_appear and not petitioner.will_appear) }
+    - "Compareció_la_parte_peticionaria_menor_de_edad_representada_por_su_madre__padre_o_tutor_legal[0]": |
+        ${ yesno(petitioner.is_minor and petitioner.will_appear and petitioner.guardian.will_appear) }
+    - "Nombre_Name[0]": |
+        ${ petitioner.name.first }
+    - "Apellidos_Surnames[0]": |
+        ${ petitioner.name.last }
+    - "Casados_Married[0]": |
+        ${ yesno(petitioner.relationship_to_op == 'married' ) }
+    - "Divorciados_Divorced[0]": |
+        ${ yesno(petitioner.relationship_to_op == 'divorced' ) }
+    - "Convivo_o_conviví_Lives_together_or_lived_together[0]": |
+        ${ yesno(petitioner.lived_with_op ) }
+    - "Una_persona_con_quien_he_sostenido_una_relación[0]": |
+        ${ yesno(petitioner.had_consensual_relationship_with_op ) }
+    - "Una_persona_con_quien_he_procreado_una[0]": |
+        ${ yesno(petitioner.had_child_with_op ) }
+    - "Mujer_Female[0]": |
+        ${ yesno(petitioner.gender == 'female') }
+    - "Hombre_Male[0]": |
+        ${ yesno(petitioner.gender == 'male') }
+    - "RESPONDENT_S_INFORMATION_OPPOSING_PARTY[0]": |
+        ${ respondent.name.first }
+    - "Nombre_Parte_Peticionada[0]": |
+        ${ respondent.name.middle }
+    - "No_No[0]": |
+        ${ yesno(respondent.disabled, invert=True) }
+    - "Impedimento_Físico_Physical_Impediment[0]": |
+        ${ yesno(respondent.disabled) }
+    - "Sí_Yes[0]": |
+        ${ split(showif('respondent.disability', respondent.disabled), [12, 36], 0) }
+    - "Nombre_Name_Inicial_Middle_Initial[0]": |
+        ${ respondent.name.paternal_surname }
+    - "Sí_Yes[1]": |
+        ${ split(showif('respondent.disability', respondent.disabled), [12, 36], 1) }
+    - "Nombre_Name_Inicial_Middle_Initial[1]": |
+        ${ respondent.name.maternal_surname }
+    - "_1[0]": |
+        ${ respondent.drivers_license_number }
+    - "Nombre_Name_Inicial_Middle_Initial[2]": |
+        ${ respondent.nickname if respondent.has_nickname else '' }
+    - "_2[0]": |
+        ${ split(respondent.vehicle_types, [12, 36], 0) }
+    - "_2[1]": |
+        ${ split(respondent.vehicle_types, [12, 36], 1) }
+    - "Nacionalidad_Nationality[0]": |
+        ${ respondent.nationality }
+    - "Marcas_Makes[0]": |
+        ${ respondent.vehicle_makes }
+    - "País_de_Origen_Country_of_Origin[0]": |
+        ${ respondent.country_of_origin }
+    - "Modelos_Models[0]": |
+        ${ respondent.vehicle_models }
+    - "Años_Years[0]": |
+        ${ respondent.vehicle_years }
+    - "Mujer_Female_2[0]": |
+        ${ yesno(respondent.gender == 'female') }
+    - "Hombre_Male_2[0]": |
+        ${ yesno(respondent.gender == 'male') }
+    - "Colores_Colors[0]": |
+        ${ respondent.vehicle_colors }
+    - "Fecha_de_Nacimiento_Date_of_Birth[0]": |
+        ${ respondent.birthdate }
+    - "Marcas_Makes__Modelos_Models__Años_Years__Colores_Colors__Núm_de_Tablillas_License_Plate_Numbers___Row_1[0]": |
+        ${ split(respondent.vehicle_license_plate_numbers, [36, 36], 0) }
+    - "Edad_Age[0]": |
+        ${ respondent.age_in_years() }
+    - "Marcas_Makes__Modelos_Models__Años_Years__Colores_Colors__Núm_de_Tablillas_License_Plate_Numbers___Row_1[1]": |
+        ${ split(respondent.vehicle_license_plate_numbers, [36, 36], 1) }
+    - "Ocupación_Occupation[0]": |
+        ${ respondent.occupation }
+    - "No_No_2[0]": |
+        ${ yesno(respondent.possesses_firearms is False) }
+    - "Sí_Yes_2[0]": |
+        ${ yesno(respondent.possesses_firearms is True) }
+    - "Desconozco_Do_not_know[0]": |
+        ${ yesno(respondent.possesses_firearms is None) }
+    - "No_No_3[0]": |
+        ${ yesno(respondent.uses_alcohol is False) }
+    - "Sí_Yes_3[0]": |
+        ${ yesno(respondent.uses_alcohol is True) }
+    - "Desconozco_Do_not_know_2[0]": |
+        ${ yesno(respondent.uses_alcohol is None) }
+    - "No_No_4[0]": |
+        ${ yesno(respondent.uses_drugs is False) }
+    - "Sí_Yes_4[0]": |
+        ${ yesno(respondent.uses_drugs is True) }
+    - "Desconozco_Do_not_know_3[0]": |
+        ${ yesno(respondent.uses_drugs is None) }
+    - "No_No_5[0]": |
+        ${ yesno(respondent.has_firearm_license is False) }
+    - "Sí_Yes_5[0]": |
+        ${ yesno(respondent.has_firearm_license is True) }
+    - "Desconozco_Do_not_know_4[0]": |
+        ${ yesno(respondent.has_firearm_license is None) }
+    - "Caso_Número_Case_Number_2[0]": |
+        ${ case_number }
+    - "No_No_6[0]": |
+        ${ yesno(respondent.has_visible_scars is False) }
+    - "Sí_Yes_6[0]": |
+        ${ yesno(respondent.has_visible_scars is True) }
+    - "En_On[0]": |
+        ${ showif('respondent.location_of_scars', respondent.has_visible_scars) }
+    - "Pies_Feet[0]": |
+        ${ respondent.height_inches }
+    - "Estatura_Height[0]": |
+        ${ respondent.height_feet }
+    - "No_No_7[0]": |
+        ${ yesno(respondent.has_visible_tattoos is False) }
+    - "Sí_Yes_7[0]": |
+        ${ yesno(respondent.has_visible_tattoos is True) }
+    - "Peso_Weihgt[0]": |
+        ${ respondent.weight_pounds }
+    - "En_On_2[0]": |
+        ${ showif('respondent.location_of_tattoos', respondent.has_visible_tattoos) }
+    - "No_No_8[0]": |
+        ${ yesno(respondent.has_visible_moles is False) }
+    - "Sí_Yes_8[0]": |
+        ${ yesno(respondent.has_visible_moles is True) }
+    - "Color_de_Pelo_Hair_Color[0]": |
+        ${ respondent.hair_color }
+    - "En_On_3[0]": |
+        ${ showif('respondent.location_of_moles', respondent.has_visible_moles) }
+    - "Color_de_Ojos_Eye_Color[0]": |
+        ${ respondent.eye_color }
+    - "Blanca_White[0]": |
+        ${ yesno(respondent.race['white']) }
+    - "Negra_o_Afroamericana[0]": |
+        ${ yesno(respondent.race['black']) }
+    - "Color_de_Piel_Skin_Color[0]": |
+        ${ respondent.skin_color }
+    - "Asiática_Asian[0]": |
+        ${ yesno(respondent.race['asian']) }
+    - "Otros_Rasgos_Other_Features[0]": |
+        ${ split(respondent.other_features, [7, 22, 22], 0) }
+    - "Hispana_o_Latina_Hispanic_or_Latino[0]": |
+        ${ yesno(respondent.race['hispanic']) }
+    - "undefined[0]": |
+        ${ yesno(respondent.race['other']) }
+    - "undefined_2[0]": |
+        ${ split(respondent.other_features, [7, 22, 22], 0) }
+    - "Otras_Other[0]": ''
+    - "undefined_2[2]": |
+        ${ split(respondent.other_features, [7, 22, 22], 1) }
+    - "undefined_2[1]": |
+        ${ showif('respondent.race_other', respondent.race['other']) }
+    - "Marque_este_encasillado_si_es_igual_a_la_Dirección_Física[0]": |
+        ${ yesno(showif('respondent.representative.mailing_address_same', respondent.is_incapacitated)) }
+    - "undefined_2[3]": |
+        ${ showif('respondent.representative', respondent.is_incapacitated) }
+    - "CondoPO_BoxHC_BoxRR_Box[0]": |
+        ${ split(showif('respondent.representative.mailing_address.area', respondent.is_incapacitated and not respondent.representative.mailing_address_same), 13, 0) }
+    - "CondoPO_BoxHC_BoxRR_Box[1]": |
+        ${ showif('respondent.representative.address.area', respondent.is_incapacitated) }
+    - "CondoPO_BoxHC_BoxRR_Box[2]": |
+        ${ split(showif('respondent.representative.mailing_address.area', respondent.is_incapacitated and not respondent.representative.mailing_address_same), 13, 1) }
+    - "NúmCalleApt_NoStreetApt[0]": |
+        ${ showif('respondent.representative.address.address', respondent.is_incapacitated) }
+    - "NúmCalleApt_NoStreetApt_2[0]": |
+        ${ showif('respondent.representative.mailing_address.address', respondent.is_incapacitated and not respondent.representative.mailing_address_same) }
+    - "Pueblo_Town[0]": |
+        ${ showif('respondent.representative.address.city', respondent.is_incapacitated) }
+    - "Pueblo_Town_2[0]": |
+        ${ showif('respondent.representative.mailing_address.city', respondent.is_incapacitated and not respondent.representative.mailing_address_same) }
+    - "País_o_Estado_Country_or_State[0]": |
+        ${ showif('respondent.representative.address.state', respondent.is_incapacitated) }
+    - "País_o_Estado_Country_or_State_2[0]": |
+        ${ showif('respondent.representative.mailing_address.state', respondent.is_incapacitated and not respondent.representative.mailing_address_same) }
+    - "Código_Postal_Zip_Code[0]": |
+        ${ showif('respondent.representative.address.zip', respondent.is_incapacitated) }
+    - "Código_Postal_Zip_Code_2[0]": |
+        ${ showif('respondent.representative.mailing_address.zip', respondent.is_incapacitated and not respondent.representative.mailing_address_same) }
+    - "Código_Postal_Zip_Code_2[3]": |
+        ${ phone_number_part(respondent.representative.mobile_number, 0) if respondent.is_incapacitated else '' }
+    - "Código_Postal_Zip_Code_2[1]": |
+        ${ phone_number_part(respondent.representative.mobile_number, 1) if respondent.is_incapacitated else '' }
+    - "Código_Postal_Zip_Code_2[5]": |
+        ${ phone_number_part(respondent.representative.mobile_number, 2) if respondent.is_incapacitated else '' }
+    - "undefined_3[0]": |
+        ${ split(showif('respondent.representative.address.landmarks', respondent.is_incapacitated), 8, 0) }
+    - "Código_Postal_Zip_Code_2[6]": |
+        ${ phone_number_part(respondent.representative.phone_number, 0) if respondent.is_incapacitated else '' }
+    - "Código_Postal_Zip_Code_2[2]": |
+        ${ phone_number_part(respondent.representative.phone_number, 1) if respondent.is_incapacitated else '' }
+    - "undefined_3[1]": |
+        ${ split(showif('respondent.representative.address.landmarks', respondent.is_incapacitated), 8, 1) }
+    - "Código_Postal_Zip_Code_2[4]": |
+        ${ phone_number_part(respondent.phone_number, 2) if respondent.is_incapacitated else '' }
+    - "UrbBarrioCond_Residential_AreaWardCondo[0]": |
+        ${ split(respondent.address.area, [5, 26, 26], 0) }
+    - "Nombre_del_Patrono_Employer_s_Name[0]": |
+        ${ split(respondent.employer.name.text, [5, 25], 0) }
+    - "Pueblo_Town__País_o_Estado_Country_or_State__Código_Postal_Zip_Code__Puntos_de_Referencia_Landmarks___Row_1[2]": |
+        ${ split(respondent.address.area, [5, 26, 26], 1) }
+    - "Pueblo_Town__País_o_Estado_Country_or_State__Código_Postal_Zip_Code__Puntos_de_Referencia_Landmarks___Row_1[4]": |
+        ${ split(respondent.employer.name.text, [5, 25], 1) }
+    - "Pueblo_Town__País_o_Estado_Country_or_State__Código_Postal_Zip_Code__Puntos_de_Referencia_Landmarks___Row_1[3]": |
+        ${ split(respondent.address.area, [5, 26, 26], 2) }
+    - "NúmCalleApt_NoStreetApt_3[0]": |
+        ${ split(respondent.address.address, [11, 26, 26], 0) }
+    - "Pueblo_Town__País_o_Estado_Country_or_State__Código_Postal_Zip_Code__Puntos_de_Referencia_Landmarks___Row_1[5]": |
+        ${ respondent.supervisor }
+    - "NúmCalleApt_NoStreetApt___Row_1[1]": |
+        ${ split(respondent.address.address, [5, 26, 26], 1) }
+    - "undefined_4[0]": ''
+    - "NúmCalleApt_NoStreetApt___Row_1[0]": |
+        ${ split(respondent.address.address, [5, 26, 26], 2) }
+    - "Pueblo_Town__País_o_Estado_Country_or_State__Código_Postal_Zip_Code__Puntos_de_Referencia_Landmarks___Row_1[6]": |
+        ${ respondent.employer.address.area }
+    - "Pueblo_Town_3[0]": |
+        ${ respondent.address.city }
+    - "undefined_5[0]": |
+        ${ split(respondent.employer.address.address, [9], 0) }
+    - "País_o_Estado_Country_or_State_3[0]": |
+        ${ respondent.address.city }
+    - "Pueblo_Town__País_o_Estado_Country_or_State__Código_Postal_Zip_Code__Puntos_de_Referencia_Landmarks___Row_1[7]": |
+        ${ split(respondent.employer.address.address, [9], 1) }
+    - "Código_Postal_Zip_Code_3[0]": |
+        ${ respondent.address.zip }
+    - "Pueblo_Town_4[0]": |
+        ${ respondent.employer.address.city }
+    - "Puntos_de_Referencia_Landmarks[0]": |
+        ${ split(respondent.address.landmarks, [9, 26, 26], 0) }
+    - "País_o_Estado_Country_or_State_4[0]": |
+        ${ respondent.employer.address.state }
+    - "Código_Postal_Zip_Code_4[0]": |
+        ${ respondent.employer.address.zip }
+    - "Pueblo_Town__País_o_Estado_Country_or_State__Código_Postal_Zip_Code__Puntos_de_Referencia_Landmarks___Row_1[1]": |
+        ${ split(respondent.address.landmarks, [9, 26, 26], 1) }
+    - "Pueblo_Town__País_o_Estado_Country_or_State__Código_Postal_Zip_Code__Puntos_de_Referencia_Landmarks___Row_1[0]": |
+        ${ split(respondent.address.landmarks, [9, 26, 26], 2) }
+    - "undefined_6[0]": |
+        ${ split(respondent.employer.address.landmarks, [8, 25], 0) }
+    - "Código_Postal_Zip_Code_2[9]": |
+        ${ phone_number_part(respondent.mobile_number, 0) if respondent.has_mobile_number else '' }
+    - "Código_Postal_Zip_Code_2[7]": |
+        ${ phone_number_part(respondent.mobile_number, 1) if respondent.has_mobile_number else '' }
+    - "Código_Postal_Zip_Code_2[11]": |
+        ${ phone_number_part(respondent.mobile_number, 2) if respondent.has_mobile_number else '' }
+    - "Pueblo_Town__País_o_Estado_Country_or_State__Código_Postal_Zip_Code__Puntos_de_Referencia_Landmarks___Row_1[8]": |
+        ${ split(respondent.employer.address.landmarks, [8, 25], 0) }
+    - "Código_Postal_Zip_Code_2[12]": |
+        ${ phone_number_part(respondent.phone_number, 0) if respondent.has_phone_number else '' }
+    - "Código_Postal_Zip_Code_2[8]": |
+        ${ phone_number_part(respondent.phone_number, 1) if respondent.has_phone_number else '' }
+    - "Código_Postal_Zip_Code_2[10]": |
+        ${ phone_number_part(respondent.phone_number, 2) if respondent.has_phone_number else '' }
+    - "Código_Postal_Zip_Code_2[15]": |
+        ${ phone_number_part(respondent.employer.phone_number, 0) if respondent.employer.has_phone_number else '' }
+    - "Código_Postal_Zip_Code_2[13]": |
+        ${ phone_number_part(respondent.employer.phone_number, 1) if respondent.employer.has_phone_number else '' }
+    - "Código_Postal_Zip_Code_2[14]": |
+        ${ phone_number_part(respondent.employer.phone_number, 2) if respondent.employer.has_phone_number else '' }
+    - "Hispana_o_Latina_Hispanic_or_Latino[1]": |
+        ${ respondent.mailing_address_same }
+    - "UrbCondEdifPO_BoxHC_Box_RR_Box_Residential_AreaCondoBldgPO_BoxHC_BoxRR_Box[0]": |
+        ${ split(respondent.mailing_address.area, [11], 0) }
+    - "UrbCondEdifPO_BoxHC_Box_RR_Box_Residential_AreaCondoBldgPO_BoxHC_BoxRR_Box[1]": something
+        ${ split(respondent.mailing_address.area, [11], 1) }
+    - "NúmCalleApt_NoStreetApt_5[0]": |
+        ${ respondent.mailing_address.address }
+    - "Pueblo_Town_5[0]": |
+        ${ respondent.mailing_address.city }
+    - "País_o_Estado_Country_or_State_5[0]": |
+        ${ respondent.mailing_address.state }
+    - "Código_Postal_Zip_Code_5[0]": |
+        ${ respondent.mailing_address.zip }
+    - "Caso_Número_Case_Number_3[0]": |
+        ${ case_number }
+    - "UrbBarrioCond_Residential_AreaWardCondo_3[0]": ''
+    - "Nombre_y_Apellidos_Full_Name[0]": |
+        ${ split(respondent.relative, [11, 26], 0)}
+    - "Nombre_y_Apellidos_Full_Name[1]": |
+        ${ split(respondent.relative, [11, 26], 1)}
+    - "UrbBarrioCond_Residential_AreaWardCondo_3[1]": |
+        ${ respondent.relative.address.area }
+    - "undefined_7[0]": |
+        ${ split(respondent.relative.address.address, [10], 0) }
+    - "Parentesco_Kinship[1]": |
+        ${ split(respondent.relative, [11, 26], 2)}
+    - "Parentesco_Kinship[0]": |
+        ${ respondent.relative_kinship }
+    - "NúmCalleApt_NoStreetApt_6[0]": |
+        ${ split(respondent.relative.address.address, [10], 1) }
+    - "Pueblo_Town_6[0]": |
+        ${ respondent.relative.city }
+    - "Lugar_de_Trabajo_Workplace[0]": |
+        ${ split(respondent.relative.workplace, [12], 0) }
+    - "País_o_Estado_Country_or_State_6[0]": |
+        ${ respondent.relative.state }
+    - "Lugar_de_Trabajo_Workplace[1]": |
+        ${ split(respondent.relative.workplace, [12], 1) }
+    - "Código_Postal_Zip_Code_6[0]": |
+        ${ phone_number_part(respondent.relative.phone_number, 0) if respondent.relative.has_phone_number else '' }
+    - "undefined_8[0]": |
+        ${ split(respondent.relative.address.landmarks, [8], 0) } 
+    - "undefined_8[1]": |
+        ${ split(respondent.relative.address.landmarks, [8], 1) } 
+    - "Ext[0]": |
+        ${ respondent.relative.phone_number_extension if respondent.relative.has_phone_number else '' }
